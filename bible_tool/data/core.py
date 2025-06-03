@@ -1,13 +1,19 @@
 import pandas as pd
 import numpy as np
+from pathlib import Path
+
+current_dir = Path(__file__).parent
+
 
 def reset_user() -> None:
-    data = pd.read_csv("BibleData-Reference.csv")
+    data = pd.read_csv(str(current_dir / "BibleData-Reference.csv"))
     user_data = data[["book_id", "chapter", "verse"]].copy()
     user_data["last_read"] = np.nan
+    user_data.to_csv(str(current_dir / "user_data.csv"), index=False)
+
 
 def reset_book() -> None:
-    data = pd.read_csv("BibleData-Reference.csv")
+    data = pd.read_csv(str(current_dir / "BibleData-Reference.csv"))
     book_data = data[["book_id", "usx_code"]].drop_duplicates()
     book_data["book_name"] = [
         # Old Testament
@@ -80,13 +86,23 @@ def reset_book() -> None:
         "Revelation",
     ]
 
-    book_data.to_csv("book_data.csv", index=False)
+    book_data.to_csv(str(current_dir / "book_data.csv"), index=False)
 
 
-
-def main() -> None:
+def reset_data() -> None:
     reset_user()
     reset_book()
 
-if __name__ == "__main__":
-    main()
+
+def get_user_data() -> pd.DataFrame:
+    user_path = current_dir / "user_data.csv"
+    if not user_path.exists():
+        reset_user()
+    return pd.read_csv(str(user_path))
+
+
+def get_book_data() -> pd.DataFrame:
+    book_path = current_dir / "book_data.csv"
+    if not book_path.exists():
+        reset_book()
+    return pd.read_csv(str(book_path))
