@@ -1,3 +1,6 @@
+bible_tool/data/user_data.csv
+bible_tool/data/book_data/csv
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
