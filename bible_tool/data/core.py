@@ -7,7 +7,7 @@ current_dir = Path(__file__).parent
 
 def reset_user() -> None:
     data = pd.read_csv(str(current_dir / "BibleData-Reference.csv"))
-    user_data = data[["book_id", "chapter", "verse"]].copy()
+    user_data = data[["book_id", "chapter", "verse", "verse_sequence"]].copy()
     user_data["last_read"] = np.nan
     user_data.to_csv(str(current_dir / "user_data.csv"), index=False)
 
@@ -98,7 +98,7 @@ def get_user_data() -> pd.DataFrame:
     user_path = current_dir / "user_data.csv"
     if not user_path.exists():
         reset_user()
-    return pd.read_csv(str(user_path))
+    return pd.read_csv(str(user_path), parse_dates=["last_read"])
 
 
 def get_book_data() -> pd.DataFrame:
@@ -106,3 +106,12 @@ def get_book_data() -> pd.DataFrame:
     if not book_path.exists():
         reset_book()
     return pd.read_csv(str(book_path))
+
+
+def set_read_date(verse_range: tuple[int, int], date_read: pd.Timestamp) -> None:
+    df = get_user_data()
+    df.loc[
+        df["verse_sequence"] >= verse_range[0] & df["verse_sequence"] <= verse_range[1],
+        "last_read",
+    ] = date_read
+    df.to_csv(str(current_dir / "user_data.csv"), index=False, date_format="%Y-%m-%d")
