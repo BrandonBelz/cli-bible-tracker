@@ -97,14 +97,18 @@ def reset_data() -> None:
 def get_user_data() -> pd.DataFrame:
     user_path = current_dir / "user_data.csv"
     if not user_path.exists():
+        print(f"File {user_path} not found. Repairing...")
         reset_user()
+        print(f"File {user_path} successfully repaired.")
     return pd.read_csv(str(user_path), parse_dates=["last_read"])
 
 
 def get_book_data() -> pd.DataFrame:
     book_path = current_dir / "book_data.csv"
     if not book_path.exists():
+        print(f"File {book_path} not found. Repairing...")
         reset_book()
+        print(f"File {book_path} successfully repaired.")
     return pd.read_csv(str(book_path))
 
 

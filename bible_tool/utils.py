@@ -55,32 +55,37 @@ def tuple_to_verse_num(
             return None
 
     result_set = user_data.copy()
-    if book is not None:
-        result_set = result_set[result_set["book_id"] == book]
-        if chap is not None:
-            result_set = result_set[result_set["chapter"] == chap]
-            if verse is not None:
-                if verse_end is not None:
-                    result_set = result_set[
-                        result_set["verse"] >= verse
-                        and result_set["verse"] <= verse_end
-                    ]
-                    max: int = result_set["verse_sequence"].max()
-                    min: int = result_set["verse_sequence"].min()
-                    return (min, max)
+    try:
+        if book is not None:
+            result_set = result_set[result_set["book_id"] == book]
+            if chap is not None:
+                result_set = result_set[result_set["chapter"] == chap]
+                if verse is not None:
+                    if verse_end is not None:
+                        result_set = result_set[
+                            result_set["verse"] >= verse
+                            and result_set["verse"] <= verse_end
+                        ]
+                        max: int = result_set["verse_sequence"].max()
+                        min: int = result_set["verse_sequence"].min()
+                        return (min, max)
+                    else:
+                        # single verse
+                        result: int = result_set[result_set["verse"] == verse].iloc[0][
+                            "verse_sequence"
+                        ]
+                        return (result, result)
                 else:
-                    # single verse
-                    result: int = result_set[result_set["verse"] == verse].iloc[0]["verse_sequence"]
-                    return (result, result)
+                    # whole chapter
+                    max = result_set["verse_sequence"].max()
+                    min = result_set["verse_sequence"].min()
+                    return (min, max)
             else:
-                # whole chapter
+                # whole book
                 max = result_set["verse_sequence"].max()
                 min = result_set["verse_sequence"].min()
                 return (min, max)
         else:
-            # whole book
-            max = result_set["verse_sequence"].max()
-            min = result_set["verse_sequence"].min()
-            return (min, max)
-    else:
+            return None
+    except:
         return None
