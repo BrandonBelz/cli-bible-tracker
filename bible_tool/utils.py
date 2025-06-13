@@ -8,7 +8,7 @@ def parse_input_to_string_tuple(
 ) -> tuple[str, str | None, str | None, str | None] | None:
     cleaned = re.sub(r"\s+", " ", input)
     pattern = re.compile(
-        r"/(?P<book>(?:[123]\s)?\w+)(?:\s(?P<chapter>\d+)?(?::(?P<verse_start>\d+)(?:-(?P<verse_end>\d+))?)?)?/gm"
+        r"(?P<book>(?:[123]\s)?\w+)(?:\s(?P<chapter>\d+)?(?::(?P<verse_start>\d+)(?:-(?P<verse_end>\d+))?)?)?"
     )
     match = pattern.match(cleaned)
 

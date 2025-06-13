@@ -115,7 +115,7 @@ def get_book_data() -> pd.DataFrame:
 def set_read_date(verse_range: tuple[int, int], date_read: pd.Timestamp) -> None:
     df = get_user_data()
     df.loc[
-        df["verse_sequence"] >= verse_range[0] & df["verse_sequence"] <= verse_range[1],
+        (df["verse_sequence"] >= verse_range[0]) & (df["verse_sequence"] <= verse_range[1]),
         "last_read",
     ] = date_read
     df.to_csv(str(current_dir / "user_data.csv"), index=False, date_format="%Y-%m-%d")

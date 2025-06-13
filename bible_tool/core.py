@@ -5,13 +5,24 @@ import sys
 from . import data
 
 
-def set_read_dates(verse_str: str, read_date: pd.Timestamp) -> None:
+def set_read_dates(verse_str: str, date_arg: str | int) -> None:
     verse_list = re.split(r"[;,]", verse_str)
+
+    if isinstance(date_arg, str):
+        try:
+            read_date = pd.to_datetime(date_arg)
+        except:
+            print("Unable to parse date.", file=sys.stderr)
+            return None
+    else:
+        today = pd.Timestamp.now()
+        read_date = today - pd.Timedelta(days=date_arg)
 
     failures: list[str] = []
     success_cnt = 0
     for verse in verse_list:
-        verse_range = tuple_to_verse_num(parse_input_to_string_tuple(verse.strip()))
+        reference_tuple = parse_input_to_string_tuple(verse.strip())
+        verse_range = tuple_to_verse_num(reference_tuple)
         if verse_range is None:
             print(
                 f"error: failed to parse and identify user input '{verse.strip()}'",
