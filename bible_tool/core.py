@@ -5,7 +5,19 @@ import sys
 from . import data
 
 
-def set_read_dates(verse_str: str, date_arg: str | int) -> None:
+def get_read_date(reference: str) -> None:
+    verse_tup = tuple_to_verse_num(parse_input_to_string_tuple(reference.strip()))
+    if verse_tup is None:
+        print(f"Verse reference {repr(reference)} not found.")
+    else:
+        print("Verse reference successfully parsed and found.")
+        date = data.get_date(verse_tup[0])
+        if date is None:
+            print(f"{repr(reference)} has never been read.")
+        else:
+            print(f"{repr(reference)} was last read on {date.date()}")
+
+def set_read_dates(verse_str: str, date_arg: str | int | None) -> None:
     verse_list = re.split(r"[;,]", verse_str)
 
     if isinstance(date_arg, str):
@@ -14,6 +26,8 @@ def set_read_dates(verse_str: str, date_arg: str | int) -> None:
         except:
             print("Unable to parse date.", file=sys.stderr)
             return None
+    elif date_arg is None:
+        read_date = None
     else:
         today = pd.Timestamp.now()
         read_date = today - pd.Timedelta(days=date_arg)
@@ -23,6 +37,7 @@ def set_read_dates(verse_str: str, date_arg: str | int) -> None:
     for verse in verse_list:
         reference_tuple = parse_input_to_string_tuple(verse.strip())
         verse_range = tuple_to_verse_num(reference_tuple)
+        date_str = read_date.date() if read_date is not None else "never"
         if verse_range is None:
             print(
                 f"error: failed to parse and identify user input '{verse.strip()}'",
@@ -35,7 +50,7 @@ def set_read_dates(verse_str: str, date_arg: str | int) -> None:
             )
             data.set_read_date(verse_range, read_date)
             print(
-                f"Successfully saved verse {verse_range[0]} as last read on {read_date.date()}"
+                f"Successfully saved verse {verse_range[0]} as last read {date_str}"
             )
             success_cnt += 1
         else:
@@ -44,10 +59,9 @@ def set_read_dates(verse_str: str, date_arg: str | int) -> None:
             )
             data.set_read_date(verse_range, read_date)
             print(
-                f"Successfully saved verses {verse_range[0]}-{verse_range[1]} as last read on {read_date.date()}"
+                f"Successfully saved verses {verse_range[0]}-{verse_range[1]} as last read {date_str}"
             )
             success_cnt += verse_range[1] - verse_range[0] + 1
-    print()
     if len(failures) == 0:
         print(f"Success! {success_cnt} verses updated.")
     else:

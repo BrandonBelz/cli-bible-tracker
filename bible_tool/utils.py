@@ -38,6 +38,7 @@ def match_input_to_book(input_str: str, book_df: DataFrame) -> int | None:
 def tuple_to_verse_num(
     parsed_tuple: tuple[str, str | None, str | None, str | None] | None,
 ) -> tuple[int, int] | None:
+    print(parsed_tuple)
     if parsed_tuple is None:
         return None
     book_data = get_book_data()
@@ -59,19 +60,19 @@ def tuple_to_verse_num(
         if book is not None:
             result_set = result_set[result_set["book_id"] == book]
             if chap is not None:
-                result_set = result_set[result_set["chapter"] == chap]
+                result_set = result_set[result_set["chapter"] == int(chap)]
                 if verse is not None:
                     if verse_end is not None:
                         result_set = result_set[
-                            result_set["verse"] >= verse
-                            and result_set["verse"] <= verse_end
+                            result_set["verse"] >= int(verse)
+                            and result_set["verse"] <= int(verse_end)
                         ]
                         max: int = result_set["verse_sequence"].max()
                         min: int = result_set["verse_sequence"].min()
                         return (min, max)
                     else:
                         # single verse
-                        result: int = result_set[result_set["verse"] == verse].iloc[0][
+                        result: int = result_set[result_set["verse"] == int(verse)].iloc[0][
                             "verse_sequence"
                         ]
                         return (result, result)

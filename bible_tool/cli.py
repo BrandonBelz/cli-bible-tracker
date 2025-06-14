@@ -1,11 +1,21 @@
-from .core import set_read_dates
+from .core import set_read_dates, get_read_date
 import argparse
+
 
 def update(args: argparse.Namespace):
     if args.date is None:
-        set_read_dates(args.reference, args.days_ago) 
+        set_read_dates(args.reference, args.days_ago)
     else:
         set_read_dates(args.reference, args.date)
+
+
+def delete(args: argparse.Namespace):
+    confirm = input(
+        f"Are you sure you want to set the date of last reading to null for {repr(args.reference)}? This cannot be undone (Y/n) "
+    )
+    if confirm.upper() == "Y":
+        set_read_dates(args.reference, None)
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -31,6 +41,17 @@ def main():
     )
     update_parser.add_argument("--date", "-d", help="Date that the reference was read")
     update_parser.set_defaults(func=update)
+
+    # Delete command
+    update_parser = subparsers.add_parser(
+        "delete",
+        help="Set the last read date to null for specified Bible reference",
+    )
+    update_parser.add_argument(
+        "reference",
+        help="Reference to the verse (Revelation 1:3), range of verses (Rev 1:1-5), chapter (Revelation 1), or book (REV) to be set to null",
+    )
+    update_parser.set_defaults(func=delete)
 
     args = parser.parse_args()
     args.func(args)

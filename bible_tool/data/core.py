@@ -111,8 +111,12 @@ def get_book_data() -> pd.DataFrame:
         print(f"File {book_path} successfully repaired.")
     return pd.read_csv(str(book_path))
 
+def get_date(verse_num: int) -> pd.Timestamp | None:
+    df = get_user_data()
+    date: pd.Timestamp | None = df[df["verse_sequence"] == verse_num]["last_read"][0]
+    return date
 
-def set_read_date(verse_range: tuple[int, int], date_read: pd.Timestamp) -> None:
+def set_read_date(verse_range: tuple[int, int], date_read: pd.Timestamp | None) -> None:
     df = get_user_data()
     df.loc[
         (df["verse_sequence"] >= verse_range[0]) & (df["verse_sequence"] <= verse_range[1]),
